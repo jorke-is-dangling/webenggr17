@@ -1,0 +1,656 @@
+openapi: "3.0.2"
+info:
+  title: Web Engineering Properties Rental API
+  version: "1.0"
+  description: |
+    Properties Rental API designed by group 17 of the 2021 Web Engineering course. Members include Abel, Lazos, Aurel and Ravi.
+
+servers:
+  - url: https://api.server.test/v1
+
+#Paths
+
+paths:
+  #Specify Url
+  /properties:
+    #Get Path
+    get:
+      tags:
+        - Properties
+      summary: Retrieves properties
+      description: Retrieves all properties with some parameters
+      parameters:
+        - name: latitude
+          in: query
+          required: false
+          description: Latitude of the property
+          schema:
+            type: integer
+        - name: longitude
+          in: query
+          required: false
+          description: Longitude of the property
+          schema:
+            type: integer
+        - name: city
+          in: query
+          required: false
+          description: City location of property
+          schema:
+            type: string
+        - name: is-available
+          in: query
+          required: false
+          description: Boolean of availability
+          schema:
+            type: string
+            enum:
+              - true
+              - false
+        - name: min
+          in: query
+          required: false
+          description: Minimum rent cost
+          schema:
+            type: integer
+        - name: max
+          in: query
+          required: false
+          description: Maximum rent cost
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          required: true
+          description: Number of properties returned
+          schema:
+            type: integer
+            default: 10
+
+        - name: order-by
+          in: query
+          description: order by rental cost or by cost per sqm
+          schema:
+            type: string
+            enum:
+              - rentalcost
+              - costpersqm
+        - name: order-dir
+          in: query
+          required: false
+          description: The directorion to order the indicated column
+          schema:
+            type: string
+            enum:
+              - desc
+              - asc
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Property"
+            text/csv:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Property"
+        "204":
+          $ref: "#/components/responses/NoResults"
+
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+        "5XX":
+          $ref: "#/components/responses/ServerError"
+
+    #Put Path
+    put:
+      tags:
+        - Properties
+      summary: Updates properties
+      description: Update all properties with some parameters
+      parameters:
+        - name: latitude
+          in: query
+          required: false
+          description: Latitude of the property
+          schema:
+            type: integer
+        - name: longitude
+          in: query
+          required: false
+          description: Longitude of the property
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/Property"
+          text/csv:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/Property"
+      responses:
+        "200":
+          description: "Properties updated, returns the new state"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Property"
+            text/csv:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Property"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+        "5XX":
+          $ref: "#/components/responses/ServerError"
+
+    #Delete Path
+    delete:
+      tags:
+        - Properties
+      summary: Deletes multiple properties
+      description: Delete all properties with some parameters
+      parameters:
+        - name: latitude
+          in: query
+          required: false
+          description: Latitude of the property
+          schema:
+            type: integer
+        - name: longitude
+          in: query
+          required: false
+          description: Longitude of the property
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Properties deleted successfully
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+        "5XX":
+          $ref: "#/components/responses/ServerError"
+
+  #Specify Url
+  /users:
+    parameters:
+      - name: city
+        in: query
+        required: false
+        description: The city which the user resides in
+        schema:
+          type: string
+    #Get Path
+    get:
+      tags:
+        - Users
+      summary: Returns multiple users
+      description: Retrieve a property with some parameters
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+            text/csv:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+        "204":
+          $ref: "#/components/responses/NoResults"
+
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+        "5XX":
+          $ref: "#/components/responses/ServerError"
+  #Specify Url
+  /properties/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: The external ID for the property
+        schema:
+          type: integer
+
+    #Get Path
+    get:
+      tags:
+        - Properties
+      summary: Returns a selected property by ID
+      description: Retrieve a property with a unique ID
+
+      responses:
+        "200":
+          description: Successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Property"
+            text/csv:
+              schema:
+                $ref: "#/components/schemas/Property"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+        "5XX":
+          $ref: "#/components/responses/ServerError"
+
+    #Put Path
+    put:
+      tags:
+        - Properties
+      summary: Update a selected property by ID
+      description: Updates the property with the given id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Property"
+          text/csv:
+            schema:
+              $ref: "#/components/schemas/Property"
+      responses:
+        "200":
+          description: "Property updated, returns the new state"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Property"
+            text/csv:
+              schema:
+                $ref: "#/components/schemas/Property"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+        "5XX":
+          $ref: "#/components/responses/ServerError"
+
+    #Delete Path
+    delete:
+      tags:
+        - Properties
+      summary: Delete a selected property by ID
+      description: Deletes the property with the given id
+      responses:
+        "204":
+          description: Property deleted successfully
+
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+        "5XX":
+          $ref: "#/components/responses/ServerError"
+
+  #Specify Url
+  /statistics:
+    parameters:
+      - name: city
+        in: query
+        required: true
+        description: Name of the city
+        schema:
+          type: string
+
+    #Get Path
+    get:
+      tags:
+        - Statistics
+      summary: Retrieves properties statistics
+      description: Retrieves statistics (mean, median, & standard deviation) from a given city
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Property"
+
+            text/csv:
+              schema:
+                $ref: "#/components/schemas/Property"
+        "204":
+          $ref: "#/components/responses/NoResults"
+
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+        "5XX":
+          $ref: "#/components/responses/ServerError"
+  #Specify Url
+  /users/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: The id of the user
+        schema:
+          type: integer
+
+    #Get Path
+    get:
+      tags:
+        - Users
+      summary: Returns a selected user by ID
+      description: Retrieve a user with a unique ID
+
+      responses:
+        "200":
+          description: Successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+            text/csv:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+        "5XX":
+          $ref: "#/components/responses/ServerError"
+    #Put Path
+    put:
+      tags:
+        - Users
+      summary: Update a selected user
+      description: Updates the user with the given id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+          text/csv:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        "200":
+          description: "User updated, returns the new state"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+            text/csv:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+        "5XX":
+          $ref: "#/components/responses/ServerError"
+
+    #Delete Path
+    delete:
+      tags:
+        - Users
+      summary: Delete a selected user by ID
+      description: Deletes the user with the given id
+      responses:
+        "204":
+          description: User deleted successfully
+
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+        "5XX":
+          $ref: "#/components/responses/ServerError"
+
+#Below are the components
+
+components:
+  schemas:
+    Property:
+      type: object
+      description: Details of a property
+      required:
+        - "id"
+        - "user ID"
+      properties:
+        id:
+          type: string
+          example: room-1235
+
+        user ID:
+          type: integer
+          example: 4680711
+
+        location:
+          type: object
+          required:
+            - "city"
+          description: Property location information
+          properties:
+            postal-code:
+              type: string
+              example: 7424NA
+
+            latitude:
+              type: number
+              example: 14
+
+            longitude:
+              type: number
+              example: 25
+            city:
+              type: string
+              example: Groningen
+
+        pricing:
+          type: object
+          description: All the money related information tied to the property
+          properties:
+            registration-cost:
+              type: integer
+              example: 120
+
+            rent:
+              type: integer
+              example: 600
+
+            rent-details:
+              type: string
+              example: Utilities included/excluded
+
+            deposit:
+              type: integer
+              example: 700
+
+            additional-cost:
+              type: integer
+              example: 120
+
+        place-info:
+          type: object
+          description: Property description
+          properties:
+            smoking:
+              type: string
+              example: No
+
+            pets:
+              type: string
+              example: Yes
+
+            property-Type:
+              type: string
+              example: Room/Studio/Appartment
+
+            roommates:
+              type: integer
+              example: 4
+
+            toilet:
+              type: string
+              example: Shared/Own
+
+            is-room-active:
+              type: string
+              example: False/True
+
+            area-sqm:
+              type: integer
+              example: 27
+
+            gender:
+              type: string
+              example: Male/Female
+        Match Tenant:
+          type: object
+          description: Desires tenant of the property according to the user that posted the property
+          properties:
+            match age:
+              type: string
+              example: 25 years - 60 years
+
+            match capacity:
+              type: string
+              example: 1 person
+
+            match gender:
+              type: string
+              example: Female
+
+            match languages:
+              type: array
+              items:
+                type: string
+                example: Dutch
+
+            match status:
+              type: array
+              items:
+                type: string
+                example: Student
+    User:
+      type: object
+      description: Description of the user who submitted the ad
+      required:
+        - "user ID"
+      properties:
+        user ID:
+          type: integer
+          example: 4680711
+        user display name:
+          type: string
+          example: Huize west
+
+        user last logged on:
+          type: string
+          example: 21-07-2019
+
+        user member since:
+          type: string
+          example: 26-06-2019
+
+        properties:
+          type: array
+          items:
+            $ref: "#/components/schemas/Property"
+    Statistics:
+      type: object
+      description: Statistics of properties in a specific city
+      required:
+        - city
+      properties:
+        city:
+          type: string
+          example: Groningen
+        meanRent:
+          type: number
+          example: 500
+        medianRent:
+          type: number
+          example: 560
+        sdRent:
+          type: number
+          example: 69
+        meanDeposit:
+          type: number
+          example: 420
+        medianDeposit:
+          type: number
+          example: 480
+        sdDeposit:
+          type: number
+          example: 56
+        properties:
+          type: array
+          items:
+            $ref: "#/components/schemas/Property"
+
+  responses:
+    BadRequest:
+      description: Request was not well-formed, see error details
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error-message:
+                type: string
+                description: Error message detailing the problem with the request
+                example: Request was not well-formed, try again.
+        text/csv:
+          schema:
+            type: object
+            properties:
+              error-message:
+                type: string
+                description: Error message detailing the problem with the request
+                example: Request was not well-formed, try again.
+
+    NotFound:
+      description: Resource not found
+
+    NoResults:
+      description: List empty; no results
+
+    ServerError:
+      description: Server error; no results, try again later
